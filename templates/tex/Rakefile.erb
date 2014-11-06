@@ -1,0 +1,23 @@
+require 'rubygems'
+require 'rake/clean'
+
+def run(command)
+  puts command
+  system command
+  puts
+end
+
+latex_file_name = "<%= tex_name %>"
+
+task :rebuild do
+	run("pdflatex #{latex_file_name}")
+	run("bibtex #{latex_file_name}")
+	run("pdflatex #{latex_file_name}")
+	run("pdflatex #{latex_file_name}")
+end
+
+task :build do	
+	run("pdflatex #{latex_file_name}")
+end
+
+task :default => [:build]

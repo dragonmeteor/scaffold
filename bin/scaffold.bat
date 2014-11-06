@@ -1,0 +1,1 @@
+ruby "%~dp0..\lib\scaffold.rb" %*
