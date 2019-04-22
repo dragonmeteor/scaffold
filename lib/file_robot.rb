@@ -66,6 +66,35 @@ class FileRobot
     end
   end
 
+  def copy_file(source, dest)
+    do_overwrite = Proc.new do
+      FileUtils.cp_r(source, dest, 
+        :verbose => false,
+        :remove_destination => true)
+      io.log('create', dest)
+    end
+    
+    create_dir(File.dirname(dest), :echo_exists=>false)
+    if File.exists?(dest)
+      if self.force
+        do_overwrite.call
+      else
+        answer = io.ask_yes_no_all("overwrite #{dest}?")
+        case answer
+        when :yes
+          do_overwrite.call
+        when :no
+          io.log('exist', dest)
+        when :all
+          self.force = true
+          do_overwrite.call
+        end
+      end
+    else
+      do_overwrite.call
+    end
+  end
+
   def create_file(filename, content="")
     do_create_file = Proc.new do
       File.open(filename, "w") { |f| f.write content }
